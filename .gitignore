@@ -1,3 +1,7 @@
+# .gitignore
+data/stolen_items.db
+logs/system.log
+
 # ===== Python Artifacts =====
 __pycache__/
 *.pyc
