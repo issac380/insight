@@ -1,0 +1,39 @@
+# ===== Python Artifacts =====
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# ===== Virtual Environments =====
+.env
+.venv/
+venv/
+ENV/
+env/
+
+# ===== Logs =====
+logs/
+*.log
+
+# ===== Data Files =====
+# Ignore all CSV files in /data
+data/*.csv
+
+# But keep inventory_status.csv under version control
+!data/inventory_status.csv
+
+# Ignore temp/backup CSVs anywhere
+*.csv~
+
+# ===== OS Specific =====
+.DS_Store
+Thumbs.db
+
+# ===== IDEs & Editors =====
+.vscode/
+.idea/
+*.swp
+
+# ===== Misc =====
+*~
+*.bak
