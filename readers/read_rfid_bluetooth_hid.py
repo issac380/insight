@@ -6,7 +6,6 @@ import os
 
 from utils.logger import logger  # Import your centralized logger
 
-LOG_FILE = 'data/rfid_logs.csv'
 INVENTORY_FILE = 'data/inventory_status.csv'
 BACKEND_URL = "http://localhost:8000/rfid"
 
@@ -55,10 +54,6 @@ def start_bluetooth_listener():
                 product = "Unknown"
                 checked_out = "Unknown"
                 current_security = "Unknown"
-            
-            os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
-            with open(LOG_FILE, 'a') as f:
-                f.write(f"{timestamp},{product},{price},{checked_out},{current_security},{tag}\n")
 
             # Optionally send to backend
             # store_rfid_tag(tag)
