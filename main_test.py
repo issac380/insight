@@ -4,4 +4,4 @@ from process_logic.process_unpaid_item import unpaid_item
 
 if __name__ == "__main__":
     init_db()
-    read_rfid_bluetooth_hid.start_bluetooth_listener(unpaid_item)
+    read_rfid_bluetooth_hid.test(unpaid_item)
