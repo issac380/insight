@@ -34,6 +34,7 @@ def init_db():
 
     logger.info(f"Database initialized at {DB_PATH}")
 
+# Adds new stolen item to the database. Do nothing if repeated scans.
 def record_unpaid_item(tag, product_info):
     now = datetime.now().isoformat()
 
@@ -54,6 +55,7 @@ def record_unpaid_item(tag, product_info):
     except Exception as e:
         logger.error(f"Database error when processing tag {tag}: {e}")
 
+# Modifies status to NEW_STATUS of field corresponding to rfid TAG. Will be called by multiple functions.
 def update_record_status_by_rfid(tag, new_status):
     try:
         cursor.execute("""

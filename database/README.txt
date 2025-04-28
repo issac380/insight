@@ -13,9 +13,9 @@ Table Schema:
               dismissed	    ❌ Ignored case (e.g., known issue, test scan)
 
 Ideal Workflow:
-    Insertion:              All entries will be inserted by calling "db_handler.record_unpaid_item" as UNRESOLVED
-    Report Generation:      Incident reports will be created in real time by incident_report.{FUNC NAME}
-                            This function will change the status of this record to REPORTED via db_handler.{FUNC NAME}
+    Insertion:              All entries will be inserted by calling "db_handler.record_unpaid_item()" as UNRESOLVED
+    Report Generation:      Incident reports will be created in real time by incident_report.{FUNC NAME}()
+                            This function will change the status of this record to REPORTED via db_handler.update_record_status_by_rfid()
     Report Acknowledgement: When the incident report is received by the human manager, this record will be labeled as INVESTIGATING
     Resolution:             Humans will manually mark entry as RESOLVED 
     Dismissal:              Humans will manually mark entry as DISMISSED 
