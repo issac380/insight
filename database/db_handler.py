@@ -19,6 +19,11 @@ def init_db():
     cursor = conn.cursor()
 
     # Create the stolen_items table
+    # Status == unresolved      🚨Item detected as unpaid but no action taken yet (default on detection)
+    #           reported	    📄 LLM report has been generated and logged
+    #           investigating	🕵️ Manual review or further action in progress
+    #           resolved	    ✅ Case closed (e.g., false alarm, item recovered, or paid afterward)
+    #           dismissed	    ❌ Ignored case (e.g., known issue, test scan)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS stolen_items (
             RFID_Tag TEXT PRIMARY KEY,
