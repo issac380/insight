@@ -6,6 +6,8 @@ import os
 DEFAULT_DB_PATH = 'data/stolen_items.db'
 
 class DBHandler:
+    VALID_STATUSES = {'unresolved', 'reported', 'resolved', 'dismissed', 'investigating'}
+
     def __init__(self, db_path=DEFAULT_DB_PATH):
         self.db_path = db_path
         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
@@ -41,7 +43,7 @@ class DBHandler:
             """, (tag, product_info['product'], product_info['price'], now, 'unresolved'))
 
             if self.cursor.rowcount == 1:
-                logger.info(f"🚨 New unpaid item recorded: {tag}")
+                logger.info(f"🚨 New unpaid added to database: {tag}")
             else:
                 logger.info(f"Duplicate scan ignored for: {tag}")
 
@@ -49,8 +51,6 @@ class DBHandler:
 
         except Exception as e:
             logger.error(f"Database error when processing tag {tag}: {e}")
-
-    VALID_STATUSES = {'unresolved', 'reported', 'resolved', 'dismissed', 'investigating'}
 
     def update_record_status_by_rfid(self, tag, new_status):
         if new_status not in self.VALID_STATUSES:

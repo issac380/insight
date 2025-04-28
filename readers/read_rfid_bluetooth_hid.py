@@ -1,13 +1,13 @@
 import tkinter as tk
 from utils.logger import logger
-from process_logic.process_unpaid_item import unpaid_item
+from process_logic.process_item import check_item
 
 def start_bluetooth_listener(db):
     def on_enter(event):
         tag = entry.get().strip()
         if tag:
             logger.info(f"Tag scanned: {tag}")
-            unpaid_item(db, tag)   # Pass tag to processor
+            check_item(db, tag)   # Pass tag to processor
         entry.delete(0, tk.END)
 
     root = tk.Tk()
@@ -24,9 +24,3 @@ def start_bluetooth_listener(db):
 
     logger.info("Bluetooth HID RFID listener started.")
     root.mainloop()
-
-# called by main_test.py or other testing functions. real workflow will not call this
-def test(db):
-    tag = "E20047061FE06026BFE10112"
-    logger.info(f"Tag scanned: {tag}")
-    unpaid_item(db, tag)

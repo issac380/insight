@@ -6,7 +6,7 @@ Table Schema:
     Detected_At TIMESTAMP,
     Status TEXT
 
-    Status == unresolved    🚨Item detected as unpaid but no action taken yet (default on detection)
+    Status == unresolved    🚨 Item detected as unpaid but no action taken yet (default on detection)
               reported	    📄 LLM report has been generated and logged
               investigating	🕵️ Manual review or further action in progress
               resolved	    ✅ Case closed (e.g., false alarm, item recovered, or paid afterward)

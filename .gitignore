@@ -20,9 +20,9 @@ logs/
 # Ignore all CSV or .db files
 data/*.csv
 data/*.db
-test_acceptance/test_data/*.csv
+#test_acceptance/test_data/*.csv
 test_acceptance/test_data/*.db
-!data/inventory_status.csv  
+!data/inventory_status.csv
 #but keep inventory status
 
 # Ignore temp/backup CSVs anywhere

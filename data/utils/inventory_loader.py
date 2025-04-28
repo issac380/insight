@@ -2,6 +2,8 @@ import csv
 import os
 from utils.logger import logger
 
+# As we scale, this file could become a different db manager.
+
 # Load inventory into memory once
 _inventory_data = {}
 
