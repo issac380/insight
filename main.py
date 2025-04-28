@@ -1,22 +1,21 @@
-from data.utils.db_handler import init_stolen_items_db
+from data.utils.db_handler import DBHandler
 from readers import read_rfid_bluetooth_hid
-from process_logic.process_unpaid_item import unpaid_item
 from data.utils.inventory_loader import load_inventory_file
 
 # ======================================= #
 #
 #       For testing, CLI:
-#       python3 main.py --test
+#       python3 main.py
 #
 # ======================================= #
 
 def run(inventory_file_path='data/inventory_status.csv', start_bluetooth=True):
-    init_stolen_items_db()
+    db = DBHandler(db_path='test_acceptance/test_data/stolen_items_test.db')
     load_inventory_file(inventory_file_path)
     if start_bluetooth:
-        read_rfid_bluetooth_hid.start_bluetooth_listener(unpaid_item)
+        read_rfid_bluetooth_hid.start_bluetooth_listener(db)
     else:
-        read_rfid_bluetooth_hid.test(unpaid_item)
+        read_rfid_bluetooth_hid.test(db)
 
 if __name__ == "__main__":
     import argparse
