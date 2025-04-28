@@ -19,11 +19,6 @@ def init_db():
     cursor = conn.cursor()
 
     # Create the stolen_items table
-    # Status == unresolved      🚨Item detected as unpaid but no action taken yet (default on detection)
-    #           reported	    📄 LLM report has been generated and logged
-    #           investigating	🕵️ Manual review or further action in progress
-    #           resolved	    ✅ Case closed (e.g., false alarm, item recovered, or paid afterward)
-    #           dismissed	    ❌ Ignored case (e.g., known issue, test scan)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS stolen_items (
             RFID_Tag TEXT PRIMARY KEY,
@@ -58,3 +53,18 @@ def record_unpaid_item(tag, product_info):
 
     except Exception as e:
         logger.error(f"Database error when processing tag {tag}: {e}")
+
+def update_record_status_by_rfid(tag, new_status):
+    try:
+        cursor.execute("""
+            UPDATE stolen_items
+            SET Status = ?
+            WHERE RFID_Tag = ?
+        """, (new_status, tag))
+        conn.commit()
+        logger.info(f"Updated status for tag {tag} to '{new_status}'")
+        
+    except Exception as e:
+        logger.error(f"Database error when updating record status by RFID of tag {tag} to new status {new_status}: {e}")
+
+    
