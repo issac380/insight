@@ -24,6 +24,7 @@ def start_bluetooth_listener(process_function):
     logger.info("Bluetooth HID RFID listener started.")
     root.mainloop()
 
+# called by main_test.py or other testing functions. real workflow will not call this
 def test(process_function):
     tag = "E20047061FE06026BFE10112"
     logger.info(f"Tag scanned: {tag}")
