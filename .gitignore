@@ -1,7 +1,4 @@
 # .gitignore
-data/stolen_items.db
-logs/system.log
-
 # ===== Python Artifacts =====
 __pycache__/
 *.pyc
@@ -20,11 +17,13 @@ logs/
 *.log
 
 # ===== Data Files =====
-# Ignore all CSV files in /data
+# Ignore all CSV or .db files
 data/*.csv
-
-# But keep inventory_status.csv under version control
-!data/inventory_status.csv
+data/*.db
+test_acceptance/test_data/*.csv
+test_acceptance/test_data/*.db
+!data/inventory_status.csv  
+#but keep inventory status
 
 # Ignore temp/backup CSVs anywhere
 *.csv~
