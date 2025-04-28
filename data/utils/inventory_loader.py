@@ -2,19 +2,17 @@ import csv
 import os
 from utils.logger import logger
 
-INVENTORY_FILE = 'data/inventory_status.csv'
-
 # Load inventory into memory once
 _inventory_data = {}
 
-def load_inventory():
+def load_inventory(inventory_file_path):
     global _inventory_data
 
-    if not os.path.exists(INVENTORY_FILE):
-        logger.error(f"Inventory file '{INVENTORY_FILE}' not found.")
+    if not os.path.exists(inventory_file_path):
+        logger.error(f"Inventory file '{inventory_file_path}' not found.")
         return
 
-    with open(INVENTORY_FILE, mode='r') as csvfile:
+    with open(inventory_file_path, mode='r') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             try:
@@ -28,9 +26,6 @@ def load_inventory():
                 logger.error(f"Error parsing inventory row: {e}")
 
     logger.info(f"Loaded {_inventory_data.__len__()} inventory items into memory.")
-
-# Call load_inventory() when module is imported
-load_inventory()
 
 def get_product_info(tag):
     """

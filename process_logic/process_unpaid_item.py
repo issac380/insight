@@ -1,7 +1,7 @@
 from database import db_handler
 from llm import incident_report
 from utils.logger import logger
-from data.inventory_loader import get_product_info   # Hypothetical helper
+from data.inventory_loader import get_product_info
 
 def unpaid_item(tag):
     product_info = get_product_info(tag)

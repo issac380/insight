@@ -7,11 +7,12 @@ project/
 ├── main.py
 ├── main_test.py
 ├── data/                       # contains relevant inventory data and log
+│   ├── utils/                  # contains database utilities
+│   │   ├── db_handler.py
+│   │   ├── inventory_loader.py
+│   │   └── test/
 │   ├── inventory_status.csv
 │   └── rfid_logs.csv
-├── database/                   # contains database utilities
-│   ├── db_handler.py
-│   └── test/
 ├── llm/                        # contains LLM related functionalities
 │   ├── business_insights.py
 │   ├── incident_report.py
@@ -29,5 +30,6 @@ project/
 │   ├── logger.py
 │   └── api_client.py
 ├── test_acceptance/            # acceptance tests for this project
-│   └── ...
+│   ├── test_data/              # contains test databases
+│   └── test_{case name}
 └── requirements.txt
