@@ -25,7 +25,7 @@ def test_db_insertion(setup_test_environment):
     db = setup_test_environment
 
     # Simulate RFID scans
-    simulated_tags = ["E20047061FE06026BFE10112", "E20047061FE06026BFE10113"]
+    simulated_tags = ["E20047061FE06026BFE10112", "E20047061FE06026BFE10112", "E20047061FE06026BFE10113"]
     for tag in simulated_tags:
         read_rfid_manual(db, tag)
 
