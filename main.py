@@ -13,7 +13,7 @@ def run(stolen_db_path='data/stolen_items.db', inventory_file_path='data/invento
     db = DBHandler(stolen_db_path)
     load_inventory_file(inventory_file_path)
     #read_rfid_bluetooth_hid.start_bluetooth_listener(db)
-    read_rfid_manual.read_rfid_manual(db, "E20047061FE06026BFE10112")
+    read_rfid_manual.read_rfid_manual(db, "E20047061FE06026BFE10113")
 
 if __name__ == "__main__":
     import argparse

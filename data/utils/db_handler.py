@@ -42,12 +42,16 @@ class DBHandler:
                 VALUES (?, ?, ?, ?, ?)
             """, (tag, product_info['product'], product_info['price'], now, 'unresolved'))
 
-            if self.cursor.rowcount == 1:
+            first_insertion = self.cursor.rowcount == 1
+
+            if first_insertion:
                 logger.info(f"🚨 New unpaid added to database: {tag}")
             else:
                 logger.info(f"Duplicate scan ignored for: {tag}")
 
             self.conn.commit()
+
+            return first_insertion
 
         except Exception as e:
             logger.error(f"Database error when processing tag {tag}: {e}")
