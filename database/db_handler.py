@@ -55,8 +55,13 @@ def record_unpaid_item(tag, product_info):
     except Exception as e:
         logger.error(f"Database error when processing tag {tag}: {e}")
 
+VALID_STATUSES = {'unresolved', 'reported', 'resolved', 'dismissed', 'investigating'}
+
 # Modifies status to NEW_STATUS of field corresponding to rfid TAG. Will be called by multiple functions.
 def update_record_status_by_rfid(tag, new_status):
+    if new_status not in VALID_STATUSES:
+        logger.error(f"Invalid status '{new_status}' provided.")
+        return
     try:
         cursor.execute("""
             UPDATE stolen_items
