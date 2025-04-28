@@ -3,75 +3,90 @@ from datetime import datetime
 from utils.logger import logger
 import os
 
-DB_PATH = 'data/stolen_items.db'
-conn = sqlite3.connect(DB_PATH)
-cursor = conn.cursor()
+DEFAULT_DB_PATH = 'data/stolen_items.db'
 
-def init_db():
-    """
-    Initializes the SQLite database and creates the stolen_items table if it doesn't exist.
-    """
-    # Ensure the /data directory exists
-    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+class DBHandler:
+    def __init__(self, db_path=DEFAULT_DB_PATH):
+        self.db_path = db_path
+        os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
+        self.conn = sqlite3.connect(self.db_path)
+        self.cursor = self.conn.cursor()
+        self.init_db()
 
-    # Connect to SQLite (creates file if it doesn't exist)
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
+    def init_db(self):
+        """
+        Initializes the database and creates the stolen_items table if it doesn't exist.
+        """
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS stolen_items (
+                RFID_Tag TEXT PRIMARY KEY,
+                Product_Name TEXT,
+                Price REAL,
+                Detected_At TIMESTAMP,
+                Status TEXT
+            )
+        """)
+        self.conn.commit()
+        logger.info(f"Database initialized at {self.db_path}")
 
-    # Create the stolen_items table
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS stolen_items (
-            RFID_Tag TEXT PRIMARY KEY,
-            Product_Name TEXT,
-            Price REAL,
-            Detected_At TIMESTAMP,
-            Status TEXT
-        )
-    """)
+    def record_unpaid_item(self, tag, product_info):
+        """
+        Adds new unpaid item to DB. Ignores duplicate scans.
+        """
+        now = datetime.now().isoformat()
+        try:
+            self.cursor.execute("""
+                INSERT OR IGNORE INTO stolen_items (RFID_Tag, Product_Name, Price, Detected_At, Status)
+                VALUES (?, ?, ?, ?, ?)
+            """, (tag, product_info['product'], product_info['price'], now, 'unresolved'))
 
-    conn.commit()
-    conn.close()
+            if self.cursor.rowcount == 1:
+                logger.info(f"🚨 New unpaid item recorded: {tag}")
+            else:
+                logger.info(f"Duplicate scan ignored for: {tag}")
 
-    logger.info(f"Database initialized at {DB_PATH}")
+            self.conn.commit()
 
-# Adds new stolen item to the database. Do nothing if repeated scans.
-def record_unpaid_item(tag, product_info):
-    now = datetime.now().isoformat()
+        except Exception as e:
+            logger.error(f"Database error when processing tag {tag}: {e}")
 
-    try:
-        cursor.execute("""
-            INSERT OR IGNORE INTO stolen_items (RFID_Tag, Product_Name, Price, Detected_At, Status)
-            VALUES (?, ?, ?, ?, ?)
-        """, (tag, product_info['product'], product_info['price'], now, 'unresolved'))
+    VALID_STATUSES = {'unresolved', 'reported', 'resolved', 'dismissed', 'investigating'}
 
-        if cursor.rowcount == 1:
-            logger.info(f"🚨 New unpaid item recorded: {tag}")
-            # Trigger LLM report here if needed
+    def update_record_status_by_rfid(self, tag, new_status):
+        if new_status not in self.VALID_STATUSES:
+            logger.error(f"Invalid status '{new_status}' provided.")
+            return
+        try:
+            self.cursor.execute("""
+                UPDATE stolen_items
+                SET Status = ?
+                WHERE RFID_Tag = ?
+            """, (new_status, tag))
+            self.conn.commit()
+            logger.info(f"Updated status for tag {tag} to '{new_status}'")
+        except Exception as e:
+            logger.error(f"Database error when updating status for tag {tag}: {e}")
+
+    def print_db(self):
+        """
+        Prints all records in the stolen_items table.
+        """
+        self.cursor.execute("SELECT * FROM stolen_items")
+        rows = self.cursor.fetchall()
+        if rows:
+            logger.info("📄 Current Unpaid Items in DB:")
+            for row in rows:
+                print(row)
         else:
-            logger.info(f"Duplicate scan ignored for: {tag}")
+            logger.info("No unpaid items recorded.")
 
-        conn.commit()
+    def close_and_cleanup(self, auto_remove=False):
+        """
+        Closes DB connection. Removes DB file if auto_remove=True.
+        """
+        self.conn.close()
+        if auto_remove:
+            if os.path.exists(self.db_path):
+                os.remove(self.db_path)
+                logger.info(f"🗑️  Removed database file: {self.db_path}")
 
-    except Exception as e:
-        logger.error(f"Database error when processing tag {tag}: {e}")
-
-VALID_STATUSES = {'unresolved', 'reported', 'resolved', 'dismissed', 'investigating'}
-
-# Modifies status to NEW_STATUS of field corresponding to rfid TAG. Will be called by multiple functions.
-def update_record_status_by_rfid(tag, new_status):
-    if new_status not in VALID_STATUSES:
-        logger.error(f"Invalid status '{new_status}' provided.")
-        return
-    try:
-        cursor.execute("""
-            UPDATE stolen_items
-            SET Status = ?
-            WHERE RFID_Tag = ?
-        """, (new_status, tag))
-        conn.commit()
-        logger.info(f"Updated status for tag {tag} to '{new_status}'")
-        
-    except Exception as e:
-        logger.error(f"Database error when updating record status by RFID of tag {tag} to new status {new_status}: {e}")
-
-    

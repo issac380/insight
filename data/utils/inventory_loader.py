@@ -5,7 +5,7 @@ from utils.logger import logger
 # Load inventory into memory once
 _inventory_data = {}
 
-def load_inventory(inventory_file_path):
+def load_inventory_file(inventory_file_path):
     global _inventory_data
 
     if not os.path.exists(inventory_file_path):

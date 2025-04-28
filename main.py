@@ -1,7 +1,7 @@
-from data.utils.db_handler import init_db
+from data.utils.db_handler import init_stolen_items_db
 from readers import read_rfid_bluetooth_hid
 from process_logic.process_unpaid_item import unpaid_item
-from data.utils.inventory_loader import load_inventory
+from data.utils.inventory_loader import load_inventory_file
 
 # ======================================= #
 #
@@ -11,8 +11,8 @@ from data.utils.inventory_loader import load_inventory
 # ======================================= #
 
 def run(inventory_file_path='data/inventory_status.csv', start_bluetooth=True):
-    init_db()
-    load_inventory(inventory_file_path)
+    init_stolen_items_db()
+    load_inventory_file(inventory_file_path)
     if start_bluetooth:
         read_rfid_bluetooth_hid.start_bluetooth_listener(unpaid_item)
     else:
