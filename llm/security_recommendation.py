@@ -6,6 +6,8 @@ from test_acceptance.test_utils import view_exited_items
 from openai import OpenAI
 import os
 
+# Only called by testing functions. Later will implement auto trigger once lost merchandise value exceeds preset
+# or manually from the user.
 def generate_security_recommendation(db_path='data/exited_items.db', model='gpt-4o-mini'):
     rows = view_exited_items(db_path)
     if not rows:
