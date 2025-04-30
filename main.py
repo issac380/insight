@@ -1,3 +1,4 @@
+import os
 from data.utils.db_handler import DBHandler
 from readers import read_rfid_bluetooth_hid, read_rfid_manual
 from data.utils.inventory_loader import load_inventory_file
@@ -17,9 +18,14 @@ def run(stolen_db_path='data/stolen_items.db', inventory_file_path='data/invento
 
 if __name__ == "__main__":
     import argparse
+    TEST_DB_PATH = 'data/stolen_items.db'
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--inventory', default='data/inventory_status.csv', help='Path to inventory CSV')
     args = parser.parse_args()
     run(inventory_file_path=args.inventory)
+
+    # Teardown: Remove test DB after test
+    if os.path.exists(TEST_DB_PATH):
+        os.remove(TEST_DB_PATH)
 

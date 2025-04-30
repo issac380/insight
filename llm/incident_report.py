@@ -1,30 +1,43 @@
 # llm/incident_report.py
 
-report_gui = None  # Optional global GUI handler injected by main/test runner
+stream_func = None  # Function to send reports to frontend (e.g., via SSE)
+logger_func = None  # Optional: could be set to logger.info or similar
 
-def set_gui(gui_instance):
+def set_stream_function(fn):
     """
-    Injects the GUI instance for real-time display.
+    Register a callback function that receives real-time report data.
+    Usually points to backend.main.send_theft_report().
     """
-    global report_gui
-    report_gui = gui_instance
+    global stream_func
+    stream_func = fn
+
+def set_logger_function(fn):
+    """
+    Optional: register a logger to write reports to file or system log.
+    """
+    global logger_func
+    logger_func = fn
 
 def generate_theft_report(tag, product_info):
     """
-    Formats and optionally displays a theft report for the given RFID tag.
-    Only unpaid items should be passed to this function.
+    Main report generation function.
+    Sends output to configured stream/log handlers and returns the report string.
     """
     report = format_theft_report(tag, product_info)
 
-    if report_gui:
-        report_gui.append_report(report)
+    if logger_func:
+        logger_func(report)
+    else:
+        print(report)
 
-    print(report)  # Still print for console visibility or logging
+    if stream_func:
+        stream_func(tag, product_info)
+
     return report
 
 def format_theft_report(tag, product_info):
     """
-    Returns a formatted theft report string.
+    Return a plain-text report for internal logging or display.
     """
     return (
         f"🚨 Theft Detected 🚨\n"
