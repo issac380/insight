@@ -12,9 +12,10 @@ def check_item(db, tag):
 
     if not product_info['checked_out']:
         logger.info(f"🚨 Unpaid item detected: {tag}")
-        if db.record_unpaid_item(tag, product_info):
+        if db.record_item(tag, product_info, False):
             # control flow only reaches if both product not checked out and 
             incident_report.generate_theft_report(tag, product_info)
 
     else:
         logger.info(f"✅ Paid item detected: {tag}")
+        db.record_item(tag, product_info, True)

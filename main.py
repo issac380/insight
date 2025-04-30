@@ -10,7 +10,7 @@ from data.utils.inventory_loader import load_inventory_file
 #
 # ======================================= #
 
-def run(stolen_db_path='data/stolen_items.db', inventory_file_path='data/inventory_status.csv'):
+def run(stolen_db_path='data/exited_items.db', inventory_file_path='data/inventory_status.csv'):
     db = DBHandler(stolen_db_path)
     load_inventory_file(inventory_file_path)
     #read_rfid_bluetooth_hid.start_bluetooth_listener(db)
@@ -18,7 +18,7 @@ def run(stolen_db_path='data/stolen_items.db', inventory_file_path='data/invento
 
 if __name__ == "__main__":
     import argparse
-    TEST_DB_PATH = 'data/stolen_items.db'
+    TEST_DB_PATH = 'data/exited_items.db'
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--inventory', default='data/inventory_status.csv', help='Path to inventory CSV')

@@ -1,16 +1,18 @@
 Table Schema:
-    CREATE TABLE IF NOT EXISTS stolen_items
+    CREATE TABLE IF NOT EXISTS exited_items
     RFID_Tag TEXT PRIMARY KEY,
     Product_Name TEXT,
     Price REAL,
     Detected_At TIMESTAMP,
-    Status TEXT
+    Status TEXT,
+    Current_Security TEXT
 
     Status == unresolved    🚨 Item detected as unpaid but no action taken yet (default on detection)
               reported	    📄 LLM report has been generated and logged
               investigating	🕵️ Manual review or further action in progress
               resolved	    ✅ Case closed (e.g., false alarm, item recovered, or paid afterward)
               dismissed	    ❌ Ignored case (e.g., known issue, test scan)
+              paid          Item is paid
 
 Ideal Workflow:
     Insertion:              All entries will be inserted by calling "db_handler.record_unpaid_item()" as UNRESOLVED

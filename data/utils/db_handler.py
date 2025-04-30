@@ -3,7 +3,7 @@ from datetime import datetime
 from utils.logger import logger
 import os
 
-DEFAULT_DB_PATH = 'data/stolen_items.db'
+DEFAULT_DB_PATH = 'data/exited_items.db'
 
 class DBHandler:
     VALID_STATUSES = {'unresolved', 'reported', 'resolved', 'dismissed', 'investigating'}
@@ -17,35 +17,45 @@ class DBHandler:
 
     def init_db(self):
         """
-        Initializes the database and creates the stolen_items table if it doesn't exist.
+        Initializes the database and creates the exited_items table if it doesn't exist.
         """
         self.cursor.execute("""
-            CREATE TABLE IF NOT EXISTS stolen_items (
+            CREATE TABLE IF NOT EXISTS exited_items (
                 RFID_Tag TEXT PRIMARY KEY,
                 Product_Name TEXT,
                 Price REAL,
                 Detected_At TIMESTAMP,
-                Status TEXT
+                Status TEXT,
+                Current_Security TEXT
             )
         """)
         self.conn.commit()
         logger.info(f"Database initialized at {self.db_path}")
 
-    def record_unpaid_item(self, tag, product_info):
+    def record_item(self, tag, product_info, paid):
         """
         Adds new unpaid item to DB. Ignores duplicate scans.
         """
         now = datetime.now().isoformat()
         try:
-            self.cursor.execute("""
-                INSERT OR IGNORE INTO stolen_items (RFID_Tag, Product_Name, Price, Detected_At, Status)
-                VALUES (?, ?, ?, ?, ?)
-            """, (tag, product_info['product'], product_info['price'], now, 'unresolved'))
+            if paid:
+                self.cursor.execute("""
+                    INSERT OR IGNORE INTO exited_items (RFID_Tag, Product_Name, Price, Detected_At, Status, Current_Security)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    """, (tag, product_info['product'], product_info['price'], now, 'paid', product_info['current_security']))
+            else:
+                self.cursor.execute("""
+                    INSERT OR IGNORE INTO exited_items (RFID_Tag, Product_Name, Price, Detected_At, Status, Current_Security)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    """, (tag, product_info['product'], product_info['price'], now, 'unresolved', product_info['current_security']))
 
             first_insertion = self.cursor.rowcount == 1
 
             if first_insertion:
-                logger.info(f"🚨 New unpaid added to database: {tag}")
+                if paid:
+                    logger.info(f"Paid item added to database: {tag}")
+                else:
+                    logger.info(f"Unpaid item added to database: {tag}")
             else:
                 logger.info(f"Duplicate scan ignored for: {tag}")
 
@@ -62,7 +72,7 @@ class DBHandler:
             return
         try:
             self.cursor.execute("""
-                UPDATE stolen_items
+                UPDATE exited_items
                 SET Status = ?
                 WHERE RFID_Tag = ?
             """, (new_status, tag))
@@ -73,9 +83,9 @@ class DBHandler:
 
     def print_db(self):
         """
-        Prints all records in the stolen_items table.
+        Prints all records in the exited_items table.
         """
-        self.cursor.execute("SELECT * FROM stolen_items")
+        self.cursor.execute("SELECT * FROM exited_items")
         rows = self.cursor.fetchall()
         if rows:
             logger.info("📄 Current Unpaid Items in DB:")
