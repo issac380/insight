@@ -18,6 +18,7 @@ def set_logger_function(fn):
     global logger_func
     logger_func = fn
 
+# Called by process_item.check_item
 def generate_theft_report(tag, product_info):
     """
     Main report generation function.
